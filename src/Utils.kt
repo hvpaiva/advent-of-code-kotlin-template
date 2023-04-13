@@ -1,21 +1,18 @@
 import java.io.File
-import java.math.BigInteger
-import java.security.MessageDigest
 
 /**
  * Reads lines from the given input txt file.
  */
-fun readInput(name: String) = File("src", "$name.txt")
+fun readInput(folder: String = "", name: String) = File("src", "$folder/$name.txt")
     .readLines()
 
-/**
- * Converts string to md5 hash.
- */
-fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray()))
-    .toString(16)
-    .padStart(32, '0')
 
 /**
- * The cleaner shorthand for printing output.
+ * Validates the given value against the expected value.
  */
-fun Any?.println() = println(this)
+fun <T> validate(name: String, expected: T?, value: T?) {
+    if (expected == value)
+        println("$name $value OK")
+    else
+        println("$name Failed. Expecting $expected but was $value")
+}
