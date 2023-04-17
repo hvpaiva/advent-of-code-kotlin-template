@@ -3,26 +3,33 @@
 [Advent of Code][aoc] – an annual event in December since 2015.
 Every year since then, with the first day of December, a programming puzzles contest is published every day for twenty-four days.
 A set of Christmas-oriented challenges provide any input you have to use to answer using the language of your choice.
-We offer you a template prepared to use with [Kotlin][kotlin] language within this repository.
+We offer you a template prepared to use it with [Kotlin][kotlin] language within this repository.
+
+> This template is inspired by the [Jetbrains one][original-template]. But heavily modified to fit my needs.
 
 ![][file:cover]
 
 ## Workflow
-**Advent of Code Kotlin Template** is a particular type of GitHub repository that lets you speed up the setup phase and start writing your AoC solutions immediately.
+**Advent of Code Kotlin Template** is a particular type of GitHub repository that lets you speed up the setup phase and 
+start writing your AoC solutions immediately.
 
-The general idea is straightforward – to create a new project based on this template, you need to log in to your GitHub account and use the **Use this template** green button.
+The general idea is straightforward – to create a new project based on this template, you need to log in to your GitHub 
+account and use the **Use this template** green button.
 And remember – **do not fork it!**
 
-After creating a new project based on this template in your account, a dedicated GitHub Actions workflow will start and clean up the code from redundant files.
+After creating a new project based on this template in your account, a dedicated GitHub Actions workflow will start and 
+clean up the code from redundant files.
 It will also personalize code to use your username and project name in namespaces and Gradle properties.
 How cool is that?
 
-Right after the [@actions-user][actions-user] actor pushes the second commit to your repository, you're ready to clone it within the IntelliJ IDEA.
+Right after the [@actions-user][actions-user] actor pushes the second commit to your repository, you're ready to 
+clone it within the IntelliJ IDEA.
 
 From now, everything's in your hands!
 Join the [Advent of Code][aoc] contest, solve the Day O1 as soon as it is published.
 
-For the following days, copy the `Day01.kt` solution file and increment the day number.
+For the following days, copy the `day01` solution folder and increment the day number.
+Or you can use the [tip](#tip) below.
 
 > Remember to join the Kotlin contest!
 > 
@@ -32,79 +39,109 @@ For the following days, copy the `Day01.kt` solution file and increment the day 
 
 ## Content
 
-After you create a new project based on the current template repository using the **Use this template** button, a bare minimal scaffold will appear in your GitHub account with the following structure:
+After you create a new project based on the current template repository using the **Use this template** button, a 
+bare minimal scaffold will appear in your GitHub account with the following structure:
 
 ```
 .
-├── README.md               README file
-├── build.gradle.kts        Gradle configuration created with Kotlin DSL
+├── README.md                   README file
+├── build.gradle.kts            Gradle configuration created with Kotlin DSL
 ├── gradle
-│   └── wrapper             Gradle Wrapper
-├── gradle.properties       Gradle configuration properties
-├── gradlew                 *nix Gradle Wrapper script
-├── gradlew.bat             Windows Gradle Wrapper script
-├── settings.gradle.kts     Gradle project settings
+│   └── wrapper                 Gradle Wrapper
+├── gradle.properties           Gradle configuration properties
+├── gradlew                     *nix Gradle Wrapper script
+├── gradlew.bat                 Windows Gradle Wrapper script
+├── settings.gradle.kts         Gradle project settings
 └── src
-    ├── Day01.kt            An empty implementation for the first AoC day
-    ├── Day01.txt           An empty file for the Day 01 input data
-    ├── Day01_test.txt      An optional Day 01 test input data used for checks
-    └── Utils.kt            A set of utility methods shared across your days
+    ├── day01
+    │   ├── Day01.kt            An empty implementation for the first AoC day
+    │   ├── Day01.txt           An file for the Day 01 input data
+    │   └── Day01_test.txt      An Day 01 test input data used for checks
+    ├── DayPuzzle.kt            The abstraction for the AoC day puzzle
+    └── Utils.kt                A set of utility methods shared across your days
 ```
 
-> Note: All task input files are excluded from the repository with `.gitignore` – we should not post them publicly, as Eric Wastl asks for: [Tweet](https://twitter.com/ericwastl/status/1465805354214830081).
-
-When the first puzzle appears, go to the `Day01.kt` and for each `part1` and `part2` functions, provide an algorithm implementation using the `input` data loaded from the `src/Day01.txt` file.
-This input data is common for both parts, and you can find it on the bottom of each day on the [Advent of Code][aoc] page.
-
-To read the input data, you can go with the `readInput(name: String)` utility method provided in the [`Utils.kt`][file:utils] file, like:
+> Note: All task input files are excluded from the repository with `.gitignore` – we should not post them publicly, 
+> as Eric Wastl asks for: [Tweet](https://twitter.com/ericwastl/status/1465805354214830081).
 
 ```kotlin
 fun main() {
-    fun part1(input: List<String>): Int {
-        return input.size
-    }
-
-    val input = readInput("Day01")
-    println(part1(input))
+    DayPuzzle<Int>("01")
+        .withParts(Part1, Part2)
+        .solve()
 }
 ```
 
-The [`Utils.kt`][file:utils] file also contains the `String.md5()` method for generating MD5 hash out of the given string and expects more helper functions for the sake of the [KISS principle][kiss].
+The `DayPuzzle` class is a generic class that accepts the day number as a string and provides a set of methods to
+configure the puzzle and solve it.
 
-Each puzzle describes some test conditions, a small portion of the information that helps check if the produced value for the given test input is valid.
-To handle that case, you can put such an input into a separated file and perform a check against the output, like:
+The `withParts` method accepts a list of `Part` implementations that are responsible for the puzzle part solution.
+It also allows you to only execute the tests with a parameter in the `solve` method:
 
 ```kotlin
 fun main() {
-    // ...
-    
-    val testInput = readInput("Day01_test")
-    check(part1(testInput) == 13)
+    DayPuzzle<Int>("01")
+        .withParts(Part1, Part2)
+        .solve(onlyTests = true)
 }
 ```
 
-The current approach of providing both `part1` and `part2` solutions within the single `Day##.kt` file may sometimes bring a disadvantage due to the first solution calculation when we expect to work on the second part only.
-With simple cases that don't consume too much of your time and resources that can be almost unnoticeable, but when solution takes seconds, it is worth considering breaking daily solution into two separated pieces, like `Day07_part1.kt` and `Day07_part2.kt`.
-
-The final result of your algorithm will be printed on the screen so that you can pass it to the Advent of Code website.
-
-To go with the next day, place the `Day02.txt` file into the `src` with relevant input data and create `Day02.kt` file with a similar code scaffold:
+In the `solve` method,
+you can also specify which parts you want to solve by passing its names in varargs `partNames` parameter:
 
 ```kotlin
 fun main() {
-    fun part1(input: List<String>): Int {
+    DayPuzzle<Int>("01")
+        .withParts(Part1, Part2)
+        .solve(onlyTests = true, "Part 2")
+}
+```
+
+Besides the main function you will find a `Part` implementation for each puzzle part. 
+Each part is responsible for calculating the solution for the given input data. 
+It'll receive the input data as a list of strings and should return
+the solution as the type defined in `DayPuzzle` type receiver.
+
+```kotlin
+object Part1 : DayPuzzle.PartPuzzle<Int>("Part 1", 24000) {
+    override fun solve(input: List<String>): Int {
         return 0
     }
-
-    fun part2(input: List<String>): Int {
-        return 0
-    }
-
-    val input = readInput("Day02")
-    println(part1(input))
-    println(part2(input))
 }
 ```
+
+The `PartPuzzle` class is a generic abstract class that accepts the part `name`, 
+that will be used for better output visualization and to filter the parts that will be solved (if needed),
+and the `valueTestExpected` that is the expected value for the test input data.
+
+The `solve` method is the one that should be implemented by the `Part` implementation.
+
+The `input` parameter is the data loaded from the `src/day01/Day01.txt` file 
+and from the `src/day01/Day01_test.txt` file. 
+And each line of the input file is a separate element in the list.
+
+This input data is common for both parts, and you can find it on the bottom of each 
+day on the [Advent of Code][aoc] page.
+
+By running the main function, you will see the following output:
+
+```bash
+Test Part 1: 7 OK
+Part 1: 1647
+Test Part 2 Failed. Expecting 19 but was 13
+Part 2: 2447
+```
+
+The tests are performed against the `valueTestExpected` value, and if the test fails, 
+the expected and actual values are printed to the console.
+
+The actual solution is printed after the test. 
+Make sure to check if the test is correct before submitting your solution to the contest.
+
+The `Part` implementations are independent of each other, so you can solve them in any order you want.
+And you even can solve only one part of the puzzle.
+Or more than two.
+It's up to you.
 
 ## Getting help
 
@@ -114,11 +151,53 @@ If you stuck with Kotlin-specific questions or anything related to this template
 - [Kotlin Slack][slack]
 - Template [issue tracker][issues]
 
+## Tip
+
+You can create a File and Code Template in IntelliJ IDEA to create a new day folder with all the necessary files.
+
+1. Go to **Settings** > **Editor** > **File and Code Template**.
+2. Click the **+** button.
+3. Enter the **Name** (a suggestion "AoC Day") and **Extension** `kt`.
+4. In the file name field, enter `${NAME.toLowerCase()}/${NAME}`.
+5. Paste the following code into the **Template text** field:
+
+```kotlin
+#parse("File Header.java")
+package ${NAME.toLowerCase()}
+
+import DayPuzzle
+
+fun main() {
+    DayPuzzle<Int>("${NAME.substring(3, 5)}")
+        .withParts(Part1)
+        .solve()
+}
+
+data object Part1 : DayPuzzle.PartPuzzle<Int>("Part 1", 10) {
+    override fun solve(input: List<String>): Int {
+        return input.size
+    }
+}
+```
+
+6. _(Optional)_ You can add the text files as well
+   - Create a new nested template by clicking the icon right to the **+** button _(an icon with a file and plus image)_.
+   - Put in the name `${NAME.toLowerCase()}/${NAME}` and extension `txt`.
+   - Paste anything into the **Template text** field. It's not really important as you will override in the puzzle solving.
+7. _(Optional)_ Repeat step 6 for the test file, naming it `${NAME.toLowerCase()}/${NAME}_test`.
+
+
+> To use is just right-click on the `src` folder and select **New** > **AoC Day**. 
+> And put the day name in the **Name** field. 
+> Like `Day02`
+> _(It's case-insensitive, but need to have the word 'day' with its number (with left zero) without the space,
+> because IntelliJ don't handle well just passing the number)_.
 
 [actions-user]: https://github.com/actions-user
 [aoc]: https://adventofcode.com
 [docs]: https://kotlinlang.org/docs/home.html
-[issues]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template/issues
+[original-template]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template
+[issues]: https://github.com/hvpaiva/advent-of-code-kotlin-template
 [kiss]: https://en.wikipedia.org/wiki/KISS_principle
 [kotlin]: https://kotlinlang.org
 [slack]: https://surveys.jetbrains.com/s3/kotlin-slack-sign-up
